@@ -1,0 +1,266 @@
+{% extends "layout.html" %} {% block title %} Kategori Barang {% endblock %}
+{%block nav_kategori_barang %} active {% endblock %} {% block content %}
+<div class="container">
+  <h2 class="text-center fw-bold mt-5 text-primary">SISTEM INFORMASI GUDANG</h2>
+  <p class="text-muted text-center h5 mb-5">Yulius - 672019014</p>
+  <hr class="" />
+  <div class="d-flex justify-content-between align-items-center my-4 px-4">
+    <h5 class="text-muted">Welcome back, {{ name }}</h5>
+    <a href="/logout" class="btn btn-danger px-4">Logout</a>
+  </div>
+  <hr />
+  {% if type == 'error' %}
+  <div class="alert alert-danger" role="alert">
+    <strong>Error : </strong> {{ message }}
+  </div>
+  {% elif type == 'success' %}
+  <div class="alert alert-success" role="alert">
+    <strong>Success : </strong> {{ message }}
+  </div>
+  {% endif %}
+  <section id="kst" class="p-4 my-4 bg-light rounded shadow-sm">
+    <div class="d-flex justify-content-between align-items-center">
+      <div class="col-md-6">
+        <h3 class="px-2 pt-3 fw-bold text-primary">KATEGORI BARANG</h3>
+        <hr
+          align="left"
+          width="50%"
+          class="mx-2 bg-primary h1 mt-2 rounded mb-4"
+          style="height: 5px; opacity: 0.75"
+        />
+      </div>
+      <button
+        type="button"
+        class="btn btn-primary"
+        data-bs-toggle="modal"
+        data-bs-target="#tambahKategori"
+      >
+        Tambah Kategori Baru
+      </button>
+    </div>
+    <div class="form-floating mb-3">
+      <input
+        type="text"
+        class="form-control"
+        id="filterTable"
+        placeholder="Cari Data "
+      />
+      <label for="filterTable">Cari Data</label>
+    </div>
+    <table class="table table-hover border">
+      <thead>
+        <tr>
+          <th class="text-center">ID Kategori</th>
+          <th>Nama Kategori</th>
+          <th class="text-center">Status</th>
+          <th class="text-end">Action</th>
+        </tr>
+      </thead>
+      <tbody id="kategori_barang">
+        {% if (category != [])%} {% for category_det in category %}
+        <tr class="align-middle">
+          <td class="text-center">{{ category_det[0] }}</td>
+          <td>{{ category_det[1] }}</td>
+          <td class="text-center">
+            {% if category_det[2] == 1 %}
+            <span class="text-success">Aktif</span>
+            {% else %}
+            <span class="text-danger">Tidak Aktif</span>
+            {% endif %}
+          </td>
+          <td align="end">
+            <button
+              type="button"
+              class="btn btn-clear"
+              data-bs-toggle="modal"
+              data-bs-target="#editData{{ category_det[0] }}"
+            >
+              <i class="bi bi-pencil h4"> </i>
+            </button>
+            <button
+              type="button"
+              class="btn btn-clear"
+              data-bs-toggle="modal"
+              data-bs-target="#deleteBarang{{ category_det[0] }}"
+            >
+              <i class="bi bi-trash h4 text-danger"></i>
+            </button>
+          </td>
+        </tr>
+        {% endfor %} {% else %}
+        <tr>
+          <td colspan="4">
+            <p class="text-center">Data Kosong</p>
+          </td>
+        </tr>
+        {% endif %}
+      </tbody>
+    </table>
+  </section>
+</div>
+
+<!-- Modal Tambah Kategori -->
+<div
+    class="modal fade"
+    id="tambahKategori"
+    tabindex="-1"
+    aria-labelledby="tambahKategoriLabel"
+    aria-hidden="true"
+>
+    <div class="modal-dialog">
+    <div class="modal-content">
+        <div class="modal-header">
+        <h5 class="modal-title" id="tambahKategoriLabel">Tambah Kategori Baru</h5>
+        <button
+            type="button"
+            class="btn-close"
+            data-bs-dismiss="modal"
+            aria-label="Close"
+        ></button>
+        </div>
+        <div class="modal-body">
+            <form action="" method="post" class="mx-auto">
+            <div class="form-floating mb-3">
+            <input
+                type="text"
+                class="form-control"
+                id="namaKategori"
+                placeholder="Nama Kategori Barang"
+                name="nama_kategori"
+            />
+            <label for="namaKategori">Nama Kategori Barang</label>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button
+            type="button"
+            class="btn btn-secondary"
+            data-bs-dismiss="modal"
+            >
+            Close
+            </button>
+            <button type="submit" name="tambah" class="btn btn-primary fw-bold">
+            Tambah Kategori
+            </button>
+        </div>
+        </form>
+    </div>
+    </div>
+</div>
+
+{% for category_det in category %}
+<!-- Modal Edit Kategori -->
+<div
+    class="modal fade"
+    id="editData{{ category_det[0] }}"
+    tabindex="-1"
+    aria-labelledby="editDataLabel"
+    aria-hidden="true"
+  >
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="editDataLabel">
+            Edit - {{ category_det[1] }}
+          </h5>
+          <button
+            type="button"
+            class="btn-close"
+            data-bs-dismiss="modal"
+            aria-label="Close"
+          ></button>
+        </div>
+        <div class="modal-body">
+          <form action="" method="post" class="mx-auto">
+            <input type="hidden" name="id_cat" value="{{ category_det[0] }}">
+          <div class="form-floating mb-3">
+            <input
+              type="text"
+              class="form-control"
+              id="namaKategori"
+              placeholder="Nama Kategori"
+              value="{{ category_det[1] }}"
+              name="nama_kategori"
+            />
+            <label for="namaKategori">Nama Kategori</label>
+          </div>
+          <div class="form-check">
+            <input class="form-check-input" type="checkbox" value="1" id="flexCheckChecked" name="status_kategori" {% if category_det[2] == 1  %} checked {% endif %} />
+            <label class="form-check-label" for="flexCheckChecked">
+              Aktif?
+            </label>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button
+            type="button"
+            class="btn btn-secondary"
+            data-bs-dismiss="modal"
+          >
+            Close
+          </button>
+          <button type="submit" name="edit" class="btn btn-primary fw-bold">
+            Edit Data
+          </button>
+        </div>
+      </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal untuk hapus data -->
+  <div
+    class="modal fade"
+    id="deleteBarang{{ category_det[0] }}"
+    tabindex="10"
+    aria-labelledby="deleteBarangLabel"
+    aria-hidden="true"
+  >
+    <div class="modal-dialog modal-md">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="deleteBarangLabel">
+            Hapus Kategori - {{ category_det[1] }}
+          </h5>
+          <button
+            type="button"
+            class="btn-close"
+            data-bs-dismiss="modal"
+            aria-label="Close"
+          ></button>
+        </div>
+        <div class="modal-body">
+          <form action="" method="post" class="mx-auto">
+            <input type="hidden" name="id_cat" value="{{ category_det[0] }}">
+            <p class="text-center text-secondary py-3">Apakah anda yakin ingin menghapus kategori <b> {{ category_det[1] }}</b> ?</p>
+            <div class="row px-3">
+              <button
+              type="button"
+              class="btn btn-secondary col me-3"
+              data-bs-dismiss="modal"
+              >
+                Batal
+              </button>
+            <button type="submit" name="hapus" class="btn btn-danger fw-bold col">
+              Hapus Kategori
+            </button>
+            </div>
+        </div>
+      </form>
+      </div>
+    </div>
+  </div>
+  </div>
+{% endfor %}
+
+<script>
+  $(document).ready(function () {
+    $("#filterTable").on("keyup", function () {
+      var value = $(this).val().toLowerCase();
+      $("#kategori_barang tr").filter(function () {
+        $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1);
+      });
+    });
+  });
+</script>
+{% endblock %}

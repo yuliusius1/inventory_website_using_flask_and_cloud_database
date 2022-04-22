@@ -1,0 +1,458 @@
+{% extends "layout.html" %}
+{% block title %}Homepage{% endblock %}
+{% block nav_home %} active {% endblock %}
+
+{% block content %}
+    
+    <div class="container">
+      <h2 class="text-center fw-bold mt-5 text-primary">
+        SISTEM INFORMASI GUDANG
+      </h2>
+      <p class="text-muted text-center h5 mb-5">Yulius - 672019014</p>
+      <hr class="" />
+      <div class="d-flex justify-content-between align-items-center my-4 px-4">
+        <h5 class="text-muted">Welcome back, {{ username }}</h5>
+        <a href="/logout" class="btn btn-danger px-4">Logout</a>
+      </div>
+      <hr />
+      {% if type == 'error' %}
+      <div class="alert alert-danger" role="alert">
+        <strong>Error : </strong> {{ message }}
+      </div>
+      {% elif type == 'success' %}
+      <div class="alert alert-success" role="alert">
+        <strong>Success : </strong> {{ message }}
+      </div>
+      {% endif %}
+      <div class="form-floating mb-3">
+        <input
+          type="text"
+          class="form-control"
+          id="filterTable"
+          placeholder="Cari Data "
+        />
+        <label for="filterTable">Cari Data</label>
+      </div>
+      <section id="kst" class="p-4 my-4 bg-light rounded shadow-sm">
+        <div class="d-flex justify-content-between align-items-center">
+          <div class="col-md-6">
+            <h3 class="px-2 pt-3 fw-bold text-primary">DATA GUDANG</h3>
+            <hr
+              align="left"
+              width="50%"
+              class="mx-2 bg-primary h1 mt-2 rounded mb-4"
+              style="height: 5px; opacity: 0.75"
+            />
+          </div>
+          <button
+            type="button"
+            class="btn btn-primary"
+            data-bs-toggle="modal"
+            data-bs-target="#tambahData"
+          >
+            Tambah Data Baru
+          </button>
+        </div>
+        <table class="table table-hover border">
+          <thead>
+            <tr>
+              <th class="text-center">ID Barang</th>
+              <th class="text-center">Kategori Barang</th>
+              <th>Nama Barang</th>
+              <th class="text-center">Stock Barang</th>
+              <th class="text-center">Status Barang</th>
+              <th class="text-end">Action</th>
+            </tr>
+          </thead>
+          <tbody id="table">
+            {% if (barang != [])%} {% for barang_details in barang %}
+            <tr class="align-middle">
+              <td class="text-center">{{ barang_details[0] }}</td>
+              <td class="text-center">{{ barang_details[2] }}</td>
+              <td>{{ barang_details[3] }}</td>
+              <td class="text-center">{{ barang_details[4] }}</td>
+              <td class="text-center">
+                {% if (barang_details[5] == 1) %} Aktif {% else %} Tidak Aktif
+                {% endif %}
+              </td>
+              <td align="end" nowrap>
+                <button
+                  type="button"
+                  class="btn btn-clear"
+                  data-bs-toggle="modal"
+                  data-bs-target="#editData{{ barang_details[0] }}"
+                >
+                <i class="bi bi-pencil h4"> </i>
+                </button>
+                <button
+                  type="button"
+                  class="btn btn-clear"
+                  data-bs-toggle="modal"
+                  data-bs-target="#addStok{{ barang_details[0] }}"
+                >
+                <i class="bi bi-plus-circle h4 text-success"></i>
+                </button>
+                <button
+                  type="button"
+                  class="btn btn-clear"
+                  data-bs-toggle="modal"
+                  data-bs-target="#minStok{{ barang_details[0] }}"
+                >
+                <i class="bi bi-dash-circle h4 text-warning"></i>
+                </button>
+                <button type="button" class="btn btn-clear" data-bs-toggle="modal"
+                data-bs-target="#deleteBarang{{ barang_details[0] }}">
+                  <i class="bi bi-trash h4 text-danger"></i>
+                </button>
+                
+              </td>
+            </tr>
+            {% endfor %} {% else %}
+            <tr>
+              <td colspan="7">
+                <p class="text-center">Data Kosong</p>
+              </td>
+            </tr>
+            {% endif %}
+          </tbody>
+        </table>
+      </section>
+      
+    </div>
+
+  <!-- Modal Tambah Data -->
+  <div
+    class="modal fade"
+    id="tambahData"
+    tabindex="-1"
+    aria-labelledby="tambahDataLabel"
+    aria-hidden="true"
+  >
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="tambahDataLabel">Tambah Data Baru</h5>
+          <button
+            type="button"
+            class="btn-close"
+            data-bs-dismiss="modal"
+            aria-label="Close"
+          ></button>
+        </div>
+        <div class="modal-body">
+            <form action="" method="post" class="mx-auto">
+            <div class="form-floating mb-3">
+              <input
+                type="text"
+                class="form-control"
+                id="namaBarang"
+                placeholder="Nama Barang"
+                name="nama_barang"
+              />
+              <label for="namaBarang">Nama Barang</label>
+            </div>
+            <div class="form-floating mb-3">
+              <select class="form-select" id="floatingSelect" name="id_cat">
+                {%if category != [] %} {% for cat in category %}
+                <option value="{{cat[0]}}">{{cat[1]}}</option>
+                {% endfor %} {% endif %}
+              </select>
+              <label for="floatingSelect">Kategori Barang</label>
+            </div>
+            <div class="form-floating mb-3">
+              <input
+                type="number"
+                class="form-control"
+                id="jumlahBarang"
+                placeholder="Jumlah Barang"
+                name="jumlah_barang"
+              />
+              <label for="jumlahBarang">Jumlah Barang</label>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button
+              type="button"
+              class="btn btn-secondary"
+              data-bs-dismiss="modal"
+            >
+              Close
+            </button>
+            <button type="submit" name="tambah" class="btn btn-primary fw-bold">
+              Submit
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  
+  {% for barang_details in barang %}
+  <!-- Modal For Barang -->
+  <div
+    class="modal fade"
+    id="editData{{ barang_details[0] }}"
+    tabindex="-1"
+    aria-labelledby="editDataLabel"
+    aria-hidden="true"
+  >
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="editDataLabel">
+            Edit - {{ barang_details[3] }}
+          </h5>
+          <button
+            type="button"
+            class="btn-close"
+            data-bs-dismiss="modal"
+            aria-label="Close"
+          ></button>
+        </div>
+        <div class="modal-body">
+          <form action="" method="post" class="mx-auto">
+            <input type="hidden" name="id_barang" value="{{ barang_details[0] }}">
+          <div class="form-floating mb-3">
+            <input
+              type="text"
+              class="form-control"
+              id="namaBarang"
+              placeholder="Nama Barang"
+              value="{{ barang_details[3] }}"
+              name="nama_barang"
+              required
+            />
+            <label for="namaBarang">Nama Barang</label>
+          </div>
+          <div class="form-floating mb-3">
+            <select class="form-select" id="floatingSelect" name="id_cat">
+              <option value="{{ barang_details[1] }}">{{ barang_details[2] }}</option>
+              {%if category != [] %} {% for cat in category %}
+              <option value="{{cat[0]}}">{{cat[1]}}</option>
+              {% endfor %} {% endif %}
+            </select>
+            <label for="floatingSelect">Kategori Barang</label>
+          </div>
+          <div class="form-check">
+            <input class="form-check-input" type="checkbox" value="1" id="flexCheckChecked" name="status" {% if barang_details[5] == 1  %} checked {% endif %} />
+            <label class="form-check-label" for="flexCheckChecked">
+              Aktif?
+            </label>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button
+            type="button"
+            class="btn btn-secondary"
+            data-bs-dismiss="modal"
+          >
+            Close
+          </button>
+          <button type="submit" name="edit" class="btn btn-primary fw-bold">
+            Edit Data
+          </button>
+        </div>
+      </form>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Modal For Tambah Stok Barang -->
+  <div
+    class="modal fade"
+    id="addStok{{ barang_details[0] }}"
+    tabindex="10"
+    aria-labelledby="addStokLabel"
+    aria-hidden="true"
+  >
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="addStokLabel">
+            Tambah Stok - {{ barang_details[3] }}
+          </h5>
+          <button
+            type="button"
+            class="btn-close"
+            data-bs-dismiss="modal"
+            aria-label="Close"
+          ></button>
+        </div>
+        <div class="modal-body">
+          <form action="" method="post" class="mx-auto">
+            <input type="hidden" name="id_barang" value="{{ barang_details[0] }}">
+          <div class="form-floating mb-3">
+            <input
+              type="text"
+              class="form-control"
+              id="namaBarang"
+              value="{{ barang_details[3] }}"
+              disabled
+            />
+            <label for="namaBarang">Nama Barang</label>
+          </div>
+          <div class="form-floating mb-3">
+            <input
+              type="text"
+              class="form-control"
+              id="stokBarang"
+              value="{{ barang_details[4] }}"
+              disabled
+            />
+            <label for="stokBarang">Jumlah Stok Saat Ini</label>
+          </div>
+          <div class="form-floating mb-3">
+            <input
+              type="number"
+              class="form-control"
+              id="jumlahStok"
+              placeholder="Jumlah Stok"
+              name="jumlah_stok"
+            />
+            <label for="jumlahStok">Jumlah Stok Tambahan</label>
+        </div>
+        <div class="modal-footer">
+          <button
+            type="button"
+            class="btn btn-secondary"
+            data-bs-dismiss="modal"
+          >
+            Close
+          </button>
+          <button type="submit" name="tambah_stok" class="btn btn-primary fw-bold">
+            Tambah Stok
+          </button>
+        </div>
+      </form>
+      </div>
+    </div>
+  </div>
+  </div>
+
+  <!-- Modal For Kurang Stok Barang -->
+  <div
+    class="modal fade"
+    id="minStok{{ barang_details[0] }}"
+    tabindex="10"
+    aria-labelledby="minStokLabel"
+    aria-hidden="true"
+  >
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="minStokLabel">
+            Kurang Stok - {{ barang_details[3] }}
+          </h5>
+          <button
+            type="button"
+            class="btn-close"
+            data-bs-dismiss="modal"
+            aria-label="Close"
+          ></button>
+        </div>
+        <div class="modal-body">
+          <form action="" method="post" class="mx-auto">
+            <input type="hidden" name="id_barang" value="{{ barang_details[0] }}">
+          <div class="form-floating mb-3">
+            <input
+              type="text"
+              class="form-control"
+              id="namaBarang"
+              value="{{ barang_details[3] }}"
+              disabled
+            />
+            <label for="namaBarang">Nama Barang</label>
+          </div>
+          <div class="form-floating mb-3">
+            <input
+              type="text"
+              class="form-control"
+              id="stokBarang"
+              value="{{ barang_details[4] }}"
+              disabled
+            />
+            <label for="stokBarang">Jumlah Stok Saat Ini</label>
+          </div>
+          <div class="form-floating mb-3">
+            <input
+              type="number"
+              class="form-control"
+              id="jumlahStok"
+              placeholder="Jumlah Stok"
+              name="jumlah_stok"
+            />
+            <label for="jumlahStok">Jumlah Stok Keluar / Kurang</label>
+        </div>
+        <div class="modal-footer">
+          <button
+            type="button"
+            class="btn btn-secondary"
+            data-bs-dismiss="modal"
+          >
+            Close
+          </button>
+          <button type="submit" name="kurang_stok" class="btn btn-primary fw-bold">
+            Kurangi Stok
+          </button>
+        </div>
+      </form>
+      </div>
+    </div>
+  </div>
+  </div>
+  <!-- Modal untuk hapus data -->
+  <div
+    class="modal fade"
+    id="deleteBarang{{ barang_details[0] }}"
+    tabindex="10"
+    aria-labelledby="deleteBarangLabel"
+    aria-hidden="true"
+  >
+    <div class="modal-dialog modal-md">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="deleteBarangLabel">
+            Hapus Barang - {{ barang_details[3] }}
+          </h5>
+          <button
+            type="button"
+            class="btn-close"
+            data-bs-dismiss="modal"
+            aria-label="Close"
+          ></button>
+        </div>
+        <div class="modal-body">
+          <form action="" method="post" class="mx-auto">
+            <input type="hidden" name="id_barang" value="{{ barang_details[0] }}">
+            <p class="text-center text-secondary py-3">Apakah anda yakin ingin menghapus <b> {{ barang_details[3] }}</b> ?</p>
+            <div class="row px-3">
+              <button
+              type="button"
+              class="btn btn-secondary col me-3"
+              data-bs-dismiss="modal"
+              >
+                Batal
+              </button>
+            <button type="submit" name="hapus" class="btn btn-danger fw-bold col">
+              Hapus Barang
+            </button>
+            </div>
+        </div>
+      </form>
+      </div>
+    </div>
+  </div>
+  </div>
+  {% endfor %}
+  <script>
+    $(document).ready(function () {
+      $("#filterTable").on("keyup", function () {
+        var value = $(this).val().toLowerCase();
+        $("#table tr").filter(function () {
+          $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1);
+        });
+      });
+    });
+  </script>
+  {% endblock %}  

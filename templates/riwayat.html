@@ -1,0 +1,82 @@
+{% extends "layout.html" %} {% block title %} Riwayat Aktivitas {% endblock %}
+{%block nav_riwayat %} active {% endblock %} {% block content %}
+<div class="container">
+  <h2 class="text-center fw-bold mt-5 text-primary">SISTEM INFORMASI GUDANG</h2>
+  <p class="text-muted text-center h5 mb-5">Yulius - 672019014</p>
+  <hr class="" />
+
+  <div class="d-flex justify-content-between align-items-center my-4 px-4">
+    <h5 class="text-muted">Welcome back, {{ name }}</h5>
+    <a href="/logout" class="btn btn-danger px-4">Logout</a>
+  </div>
+  <hr />
+  {% if type == 'error' %}
+  <div class="alert alert-danger" role="alert">
+    <strong>Error : </strong> {{ message }}
+  </div>
+  {% elif type == 'success' %}
+  <div class="alert alert-success" role="alert">
+    <strong>Success : </strong> {{ message }}
+  </div>
+  {% endif %}
+  <section id="kst" class="p-4 my-4 bg-light rounded shadow-sm">
+    <div class="d-flex justify-content-between align-items-center">
+      <div class="col-md-6">
+        <h3 class="px-2 pt-3 fw-bold text-primary">RIWAYAT AKTIVITAS</h3>
+        <hr
+          align="left"
+          width="50%"
+          class="mx-2 bg-primary h1 mt-2 rounded mb-4"
+          style="height: 5px; opacity: 0.75"
+        />
+      </div>
+    </div>
+    <div class="form-floating mb-3">
+      <input
+        type="text"
+        class="form-control"
+        id="filterTable"
+        placeholder="Cari Data "
+      />
+      <label for="filterTable">Cari Data</label>
+    </div>
+    <table class="table table-hover border">
+      <thead>
+        <tr>
+          <th>ID History</th>
+          <th>Username</th>
+          <th>Keterangan</th>
+          <th>Waktu</th>
+        </tr>
+      </thead>
+      <tbody id="riwayatAktivitas">
+        {% if (history != [])%} {% for history_det in history %}
+        <tr class="align-middle">
+          <td>{{ history_det[0] }}</td>
+          <td>{{ history_det[1] }}</td>
+          <td>{{ history_det[2] }}</td>
+          <td>{{ history_det[3] }}</td>
+        </tr>
+        {% endfor %} {% else %}
+        <tr>
+          <td colspan="4">
+            <p class="text-center">Data Kosong</p>
+          </td>
+        </tr>
+        {% endif %}
+      </tbody>
+    </table>
+  </section>
+</div>
+
+<script>
+  $(document).ready(function () {
+    $("#filterTable").on("keyup", function () {
+      var value = $(this).val().toLowerCase();
+      $("#riwayatAktivitas tr").filter(function () {
+        $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1);
+      });
+    });
+  });
+</script>
+{% endblock %}
